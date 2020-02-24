@@ -29,7 +29,9 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -85,40 +87,14 @@ public class MainActivity extends AppCompatActivity {
         if (start) {
             startRecording();  //если true то запускает
         } else {
+            TextView infoLine = findViewById(R.id.infoLine);
+            infoLine.setText("Обрабатывается");
+
+            ConstraintLayout mainLayout = findViewById(R.id.mainView);
+            mainLayout.setBackgroundColor(getResources().getColor(R.color.thinking));
+
             stopRecording();   //если false то стопорит
         }
-    }
-
-    //Метод который ЗАПУСКАЕТ и ОСТАНАВЛИВАЕТ воспроизведение
-    private void onPlay(boolean start) {
-        if (start) {
-            startPlaying();  //если true то запускает
-        } else {
-            stopPlaying();   //если false то стопорит
-        }
-    }
-
-
-
-
-    //метод который запускает воспроизведение
-    private void startPlaying() {
-        //экземпляр класа для проигрывания
-        player = new MediaPlayer();
-        try {
-            //сообщаем путь к файлу для воспроизведения
-            player.setDataSource(fileName);
-            player.prepare();
-            player.start();
-        } catch (IOException e) {
-            Log.e(LOG_TAG, "prepare() failed");
-        }
-    }
-
-    //метод для остановки воспроизведения
-    private void stopPlaying() {
-        player.release();
-        player = null;
     }
 
 
@@ -128,6 +104,9 @@ public class MainActivity extends AppCompatActivity {
 
         TextView infoLine = findViewById(R.id.infoLine);
         infoLine.setText("Записывается");
+
+        ConstraintLayout mainLayout = findViewById(R.id.mainView);
+        mainLayout.setBackgroundColor(getResources().getColor(R.color.hearing));
 
         //обьект для работы с записью
         recorder = new MediaRecorder();
@@ -157,7 +136,10 @@ public class MainActivity extends AppCompatActivity {
     private void stopRecording() {
 
         TextView infoLine = findViewById(R.id.infoLine);
-        infoLine.setText("Обрабатывается");
+
+        ConstraintLayout mainLayout = findViewById(R.id.mainView);
+
+
 
         //стопорит рекордер
         recorder.stop();
@@ -173,7 +155,8 @@ public class MainActivity extends AppCompatActivity {
 
 
         try{
-            infoLine.setText("Ожидание");
+            infoLine.setText("Ожидание ");
+            mainLayout.setBackgroundColor(getResources().getColor(R.color.ready));
             //для проверки индекса
             Toast.makeText(getApplicationContext(), String.valueOf(res1.get()), Toast.LENGTH_SHORT).show();
             //воспроизводим ответ
@@ -206,107 +189,6 @@ public class MainActivity extends AppCompatActivity {
         mediaPlayer.start();
     }
 
-    /*
-    //создаем программно кнопку ЗАПИСИ и вещаем обработчик клика
-    class RecordButton extends Button {
-        boolean mStartRecording = true;
-
-        OnClickListener clicker = new OnClickListener() {
-            public void onClick(View v) {
-                onRecord(mStartRecording);
-                if (mStartRecording) {
-                    setText("Stop recording");
-                    //processLine.setText("Записывается");
-                } else {
-                    setText("Start recording");
-                    //processLine.setText("Обрабатывается");
-                }
-                mStartRecording = !mStartRecording;
-            }
-        };
-
-        public RecordButton(Context ctx) {
-            super(ctx);
-            setText("Start recording");
-            setOnClickListener(clicker);
-            //setOnTouchListener(toucher);
-        }
-
-
-
-        //пытаемся  обработать зажатие
-
-    }
-
-
-
-    //создаем программно кнопку ВОСПРОИЗВЕДЕНИЯ и вещаем обработчик клика
-    class PlayButton extends Button {
-        boolean mStartPlaying = true;
-
-        OnClickListener clicker = new OnClickListener() {
-            public void onClick(View v) {
-                onPlay(mStartPlaying);
-                if (mStartPlaying) {
-                    setText("Stop playing");
-                } else {
-                    setText("Start playing");
-                }
-                mStartPlaying = !mStartPlaying;
-            }
-        };
-
-        public PlayButton(Context ctx) {
-            super(ctx);
-            setText("Start playing");
-            setOnClickListener(clicker);
-        }
-    }
-
-
-     */
-
-
-    /*
-    //создаем программно кнопку TEST для тестирвания удержания
-    class TestButton extends Button {
-        boolean mStartRecording = true;
-
-        OnClickListener clicker = new OnClickListener() {
-            public void onClick(View v) {
-                onRecord(mStartRecording);
-                if (mStartRecording) {
-                    setText("Stop recording");
-                } else {
-                    setText("Start recording");
-                }
-                mStartRecording = !mStartRecording;
-            }
-        };
-
-        public TestButton(Context ctx) {
-            super(ctx);
-            setText("Start recording");
-            setOnClickListener(clicker);
-            setOnTouchListener(toucher);
-        }
-
-
-        OnTouchListener toucher = new OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                TextView detect = findViewById(R.id.textViewEvent);
-                detect.setText("Вы удерживаете кнопку");
-                return false;
-            }
-        };
-
-
-        //пытаемся  обработать зажатие
-
-    }
-
-     */
 
 
     @Override
