@@ -136,16 +136,6 @@ public class MainActivity extends AppCompatActivity {
     //вызывается при остановке записи
     private void stopRecording() {
 
-
-        TextView infoLine = findViewById(R.id.infoLine);
-        infoLine.setText("Обрабатывается");
-
-        ConstraintLayout mainLayout = findViewById(R.id.mainView);
-        mainLayout.setBackgroundColor(getResources().getColor(R.color.thinking));
-
-        Toast.makeText(getApplicationContext(), "Запись сохранена", Toast.LENGTH_SHORT).show();
-
-
         //стопорит рекордер
         recorder.stop();
 
@@ -159,25 +149,17 @@ public class MainActivity extends AppCompatActivity {
         AsyncTask res1 = res.execute();
 
 
-
-        try{
-
-            //Toast.makeText(getApplicationContext(), "fdf", Toast.LENGTH_SHORT).show();
-            //для проверки индекса
-            //Toast.makeText(getApplicationContext(), String.valueOf(res1.get()), Toast.LENGTH_SHORT).show();
-            //воспроизводим ответ
-            //startAnswer(Integer.parseInt(String.valueOf(res1.get())));
-            //startAnswer(Integer.parseInt(String.valueOf(1)));
-
-        }catch (Exception e){
-            Log.e(LOG_TAG, "22222");
-        }
-
-
     }
 
     //тест
     private void startAnswer(int code) {
+        TextView infoLine = findViewById(R.id.infoLine);
+
+        ConstraintLayout mainLayout = findViewById(R.id.mainView);
+
+        infoLine.setText("Ожидание ");
+        mainLayout.setBackgroundColor(getResources().getColor(R.color.ready));
+
         //массив айдишников файлов реплик
         int[] list = {
                 R.raw.yessir,
@@ -195,12 +177,9 @@ public class MainActivity extends AppCompatActivity {
         MediaPlayer mediaPlayer = MediaPlayer.create(getApplicationContext(), list[code]);
         mediaPlayer.start();
 
-        TextView infoLine = findViewById(R.id.infoLine);
 
-        ConstraintLayout mainLayout = findViewById(R.id.mainView);
 
-        infoLine.setText("Ожидание ");
-        mainLayout.setBackgroundColor(getResources().getColor(R.color.ready));
+
     }
 
 
@@ -334,7 +313,7 @@ public class MainActivity extends AppCompatActivity {
             //Toast.makeText(getApplicationContext(), String.valueOf(currentTime), Toast.LENGTH_SHORT).show();
 
 
-            if(currentTime > allowTime){
+            if(currentTime > allowTime){       
 
                 //вибрирует при новом рекорде
                 long mills = 100L;
@@ -391,6 +370,18 @@ public class MainActivity extends AppCompatActivity {
 
         public FilesUploadingTask(String filePath) {
             this.filePath = filePath;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            TextView infoLine = findViewById(R.id.infoLine);
+            infoLine.setText("Обрабатывается");
+
+            ConstraintLayout mainLayout = findViewById(R.id.mainView);
+            mainLayout.setBackgroundColor(getResources().getColor(R.color.thinking));
+
+            Toast.makeText(getApplicationContext(), "Запись сохранена", Toast.LENGTH_SHORT).show();
         }
 
         @Override
@@ -487,11 +478,10 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
-            //tvInfo.setText("End");
-            Toast.makeText(getApplicationContext(), result, Toast.LENGTH_SHORT).show();
-            if(Boolean.getBoolean(result)){
+
+            if(!result.equals("0")){
                 startAnswer(Integer.parseInt(result));
-                //Toast.makeText(getApplicationContext(), String.valueOf(allowTime), Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getApplicationContext(), result, Toast.LENGTH_SHORT).show();
             }
 
         }
