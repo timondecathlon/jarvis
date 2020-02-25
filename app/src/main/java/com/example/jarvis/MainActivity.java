@@ -81,18 +81,19 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    boolean mStartClicking = true;
+    //метод который вызывается при записи
+    public void clickRecord(View v) {
+        onRecord(mStartClicking);
+        mStartClicking = !mStartClicking;
+    }
+
 
     //метод который вызывается при записи
     private void onRecord(boolean start) {
         if (start) {
             startRecording();  //если true то запускает
         } else {
-            TextView infoLine = findViewById(R.id.infoLine);
-            infoLine.setText("Обрабатывается");
-
-            ConstraintLayout mainLayout = findViewById(R.id.mainView);
-            mainLayout.setBackgroundColor(getResources().getColor(R.color.thinking));
-
             stopRecording();   //если false то стопорит
         }
     }
@@ -135,10 +136,14 @@ public class MainActivity extends AppCompatActivity {
     //вызывается при остановке записи
     private void stopRecording() {
 
+
         TextView infoLine = findViewById(R.id.infoLine);
+        infoLine.setText("Обрабатывается");
 
         ConstraintLayout mainLayout = findViewById(R.id.mainView);
+        mainLayout.setBackgroundColor(getResources().getColor(R.color.thinking));
 
+        Toast.makeText(getApplicationContext(), "Запись сохранена", Toast.LENGTH_SHORT).show();
 
 
         //стопорит рекордер
@@ -154,13 +159,15 @@ public class MainActivity extends AppCompatActivity {
         AsyncTask res1 = res.execute();
 
 
+
         try{
-            infoLine.setText("Ожидание ");
-            mainLayout.setBackgroundColor(getResources().getColor(R.color.ready));
+
+            //Toast.makeText(getApplicationContext(), "fdf", Toast.LENGTH_SHORT).show();
             //для проверки индекса
-            Toast.makeText(getApplicationContext(), String.valueOf(res1.get()), Toast.LENGTH_SHORT).show();
+            //Toast.makeText(getApplicationContext(), String.valueOf(res1.get()), Toast.LENGTH_SHORT).show();
             //воспроизводим ответ
-            startAnswer(Integer.parseInt(String.valueOf(res1.get())));
+            //startAnswer(Integer.parseInt(String.valueOf(res1.get())));
+            //startAnswer(Integer.parseInt(String.valueOf(1)));
 
         }catch (Exception e){
             Log.e(LOG_TAG, "22222");
@@ -187,6 +194,13 @@ public class MainActivity extends AppCompatActivity {
         //считывание реплики и воспроизведение
         MediaPlayer mediaPlayer = MediaPlayer.create(getApplicationContext(), list[code]);
         mediaPlayer.start();
+
+        TextView infoLine = findViewById(R.id.infoLine);
+
+        ConstraintLayout mainLayout = findViewById(R.id.mainView);
+
+        infoLine.setText("Ожидание ");
+        mainLayout.setBackgroundColor(getResources().getColor(R.color.ready));
     }
 
 
@@ -467,6 +481,19 @@ public class MainActivity extends AppCompatActivity {
             }
 
             return result;
+        }
+
+
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+            //tvInfo.setText("End");
+            Toast.makeText(getApplicationContext(), result, Toast.LENGTH_SHORT).show();
+            if(Boolean.getBoolean(result)){
+                startAnswer(Integer.parseInt(result));
+                //Toast.makeText(getApplicationContext(), String.valueOf(allowTime), Toast.LENGTH_SHORT).show();
+            }
+
         }
 
         // Считка потока в строку
