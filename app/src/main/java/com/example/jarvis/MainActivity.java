@@ -313,7 +313,7 @@ public class MainActivity extends AppCompatActivity {
             //Toast.makeText(getApplicationContext(), String.valueOf(currentTime), Toast.LENGTH_SHORT).show();
 
 
-            if(currentTime > allowTime){       
+            if(currentTime > allowTime){
 
                 //вибрирует при новом рекорде
                 long mills = 100L;
