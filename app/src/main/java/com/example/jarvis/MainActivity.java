@@ -33,6 +33,8 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -479,9 +481,20 @@ public class MainActivity extends AppCompatActivity {
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
 
-            if(!result.equals("0")){
-                startAnswer(Integer.parseInt(result));
-                //Toast.makeText(getApplicationContext(), result, Toast.LENGTH_SHORT).show();
+            try {
+                JSONObject json = new JSONObject(result);
+
+                String text = json.getString("text");
+                Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
+
+                String answer = json.getString("answer");
+                int answer_code = Integer.parseInt(answer);
+                if(answer_code > 0){
+                    startAnswer(answer_code);
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
             }
 
         }
