@@ -350,27 +350,27 @@ public class MainActivity extends AppCompatActivity {
     public class FilesUploadingTask extends AsyncTask<Void, Void, String> {
 
         // Конец строки
-        private String lineEnd = "\r\n";
+        String lineEnd = "\r\n";
         // Два тире
-        private String twoHyphens = "--";
+        String twoHyphens = "--";
         // Разделитель
-        private String boundary =  "----WebKitFormBoundary9xFB2hiUhzqbBQ4M";
+        String boundary =  "----WebKitFormBoundary9xFB2hiUhzqbBQ4M";
 
         // Переменные для считывания файла в оперативную память
-        private int bytesRead, bytesAvailable, bufferSize;
-        private byte[] buffer;
-        private int maxBufferSize = 1*1024*1024;
+         int bytesRead, bytesAvailable, bufferSize;
+         byte[] buffer;
+         int maxBufferSize = 1*1024*1024;
 
         // Путь к файлу в памяти устройства
         private String filePath;
 
         // Адрес метода api для загрузки файла на сервер
-        public static final String API_FILES_UPLOADING_PATH = "https://ironlinks.ru/android/upload.php";
+        static final String API_FILES_UPLOADING_PATH = "https://ironlinks.ru/android/upload.php";
 
         // Ключ, под которым файл передается на сервер
-        public static final String FORM_FILE_NAME = "file1";
+        static final String FORM_FILE_NAME = "file1";
 
-        public FilesUploadingTask(String filePath) {
+        FilesUploadingTask(String filePath) {
             this.filePath = filePath;
         }
 
@@ -489,8 +489,16 @@ public class MainActivity extends AppCompatActivity {
 
                 String answer = json.getString("answer");
                 int answer_code = Integer.parseInt(answer);
+
                 if(answer_code > 0){
                     startAnswer(answer_code);
+                }else{
+                    TextView infoLine = findViewById(R.id.infoLine);
+
+                    ConstraintLayout mainLayout = findViewById(R.id.mainView);
+
+                    infoLine.setText("Запрос не распознан ");
+                    mainLayout.setBackgroundColor(getResources().getColor(R.color.undefined));
                 }
 
             } catch (Exception e) {
