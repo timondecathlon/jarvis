@@ -6,14 +6,21 @@ import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
+import android.graphics.Camera;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.hardware.camera2.CameraAccessException;
+import android.hardware.camera2.CameraManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Vibrator;
 
@@ -47,11 +54,14 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
+import java.security.Policy;
 import java.util.Date;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ExecutionException;
+
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -117,11 +127,18 @@ public class MainActivity extends AppCompatActivity {
         //тип считывания
         recorder.setAudioSource(MediaRecorder.AudioSource.VOICE_RECOGNITION);
         //формат для хранения записи
-        recorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+        recorder.setOutputFormat(MediaRecorder.OutputFormat.AAC_ADTS);
+        //видимо говорим получать макс качество(можно еще немного увеличить)
+        //частота выборки
+        recorder.setAudioSamplingRate(44100);
+        //битрейт
+        recorder.setAudioEncodingBitRate(96000);
+
         //путь хранения файла
         recorder.setOutputFile(fileName);
         //тип кодировки файла
-        recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+        recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
+        //или попробовать AAC просто
 
         try {
             //полготавливаемся к записи
@@ -146,7 +163,8 @@ public class MainActivity extends AppCompatActivity {
 
         //отправляем на сервак
         fileName = getExternalCacheDir().getAbsolutePath();
-        fileName += "/audiorecordtest.3gp";
+        //fileName += "/audiorecordtest.3gp";
+        fileName += "/audiorecordtest.aac";
         FilesUploadingTask res = new FilesUploadingTask(fileName);
         AsyncTask res1 = res.execute();
 
@@ -192,7 +210,8 @@ public class MainActivity extends AppCompatActivity {
 
         // Record to the external cache directory for visibility
         fileName = getExternalCacheDir().getAbsolutePath();
-        fileName += "/audiorecordtest.3gp";
+        //fileName += "/audiorecordtest.3gp";
+        fileName += "/audiorecordtest.aac";
 
         //super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -366,6 +385,9 @@ public class MainActivity extends AppCompatActivity {
 
         // Адрес метода api для загрузки файла на сервер
         static final String API_FILES_UPLOADING_PATH = "https://ironlinks.ru/android/upload.php";
+        //static final String API_FILES_UPLOADING_PATH = "https://ironlinks.ru/jarvis/jarvis.php";
+        //static final String API_FILES_UPLOADING_PATH = "http://192.168.1.67/jarvis/jarvis.php";
+
 
         // Ключ, под которым файл передается на сервер
         static final String FORM_FILE_NAME = "file1";
@@ -481,13 +503,19 @@ public class MainActivity extends AppCompatActivity {
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
 
+
+
             try {
                 JSONObject json = new JSONObject(result);
 
                 String text = json.getString("text");
+                if(text.equals("джарвис свет")){
+                    turnOnLight();
+                }
                 Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
 
                 String answer = json.getString("answer");
+
                 int answer_code = Integer.parseInt(answer);
 
                 if(answer_code > 0){
@@ -520,5 +548,68 @@ public class MainActivity extends AppCompatActivity {
             return buffer.toString();
         }
     }
+
+    public static boolean cam =  false;
+
+    public void turnOnLight(){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            //Toast.makeText(getApplicationContext(), "test", Toast.LENGTH_SHORT).show();
+
+            cam = !cam;
+            CameraManager camManager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
+            String cameraId = null;
+            try {
+                cameraId = camManager.getCameraIdList()[0];
+                camManager.setTorchMode(cameraId, cam);   //Turn ON
+            } catch (CameraAccessException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+
+
+
+
+    /*---------- Listener class to get coordinates ------------- */
+    /*
+    private class MyLocationListener implements LocationListener {
+
+        @Override
+        public void onLocationChanged(Location loc) {
+
+            try{
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 10, locationListener);
+            }
+            catch (SecurityException e){
+                //
+            }
+
+            Toast.makeText(
+                    getBaseContext(),
+                    "Location changed: Lat: " + loc.getLatitude() + " Lng: "
+                            + loc.getLongitude(), Toast.LENGTH_SHORT).show();
+            String longitude = "Longitude: " + loc.getLongitude();
+            String latitude = "Latitude: " + loc.getLatitude();
+
+        }
+
+        @Override
+        public void onProviderDisabled(String provider) {}
+
+        @Override
+        public void onProviderEnabled(String provider) {}
+
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras) {}
+    }
+
+    LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
+    LocationListener locationListener = new MyLocationListener();
+
+     */
+
+
 }
 
