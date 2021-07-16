@@ -384,8 +384,8 @@ public class MainActivity extends AppCompatActivity {
         private String filePath;
 
         // Адрес метода api для загрузки файла на сервер
-        static final String API_FILES_UPLOADING_PATH = "https://ironlinks.ru/android/upload.php";
-        //static final String API_FILES_UPLOADING_PATH = "https://ironlinks.ru/jarvis/jarvis.php";
+        //static final String API_FILES_UPLOADING_PATH = "https://ironlinks.ru/android/upload.php";           
+        static final String API_FILES_UPLOADING_PATH = "https://ironlinks.ru/jarvis/jarvis.php";
         //static final String API_FILES_UPLOADING_PATH = "http://192.168.1.67/jarvis/jarvis.php";
 
 
